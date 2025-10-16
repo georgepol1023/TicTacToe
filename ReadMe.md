@@ -1,6 +1,6 @@
 # Tic Tac Toe 🎮
 
-A simple Tic Tac Toe game built with **HTML, CSS, and JavaScript**.
+A simple Tic Tac Toe game built with HTML, CSS, and JavaScript.
 
 ## Features
 - Two players on the same computer
@@ -8,7 +8,4 @@ A simple Tic Tac Toe game built with **HTML, CSS, and JavaScript**.
 - Simple responsive layout
 
 ## Demo
-👉 [Play it here](https://georgepol1023.github.io/TicTacToe/)
-
-## How to Run
-Clone the repo and open `index.html` in your browser.
+👉 [Play it here](https://georgepol10123.github.io/TicTacToe/)
