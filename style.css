@@ -48,7 +48,7 @@ html, body {
   gap: 6px;
   width: 100%;  /* Fill container width */
   max-width: 480px; /* Optional limit */
-  margin: 20px auto;
+  margin-bottom: 60px; /* adds space below the board before the footer */
 }
 
 .cell {
