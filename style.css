@@ -15,6 +15,8 @@ html, body {
   background-size: cover;
   background-attachment: fixed;
   color: #e6eef6;
+  flex-direction: column;
+  min-height: 100vh; /* push content to fill the height */
 }
 
 .wrap {
@@ -28,6 +30,7 @@ html, body {
   box-sizing: border-box;
   width: 100vw; /* Use full viewport width */
   margin: 0 auto;
+  flex: 1; /* make the main container grow */
 }
 
 .card {
@@ -79,6 +82,7 @@ html, body {
   justify-content: space-between;
   align-items: center;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.1);
+  margin-top: auto;
 }
 
 .footer button {
