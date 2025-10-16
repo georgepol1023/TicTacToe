@@ -42,6 +42,35 @@
   @media (max-width:480px){
     .cell{font-size:32px}
     header{flex-direction:column;align-items:flex-start;gap:8px}
+
+    .board {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px; /* smaller gap makes the grid more defined */
+  padding: 12px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 8px;
+}
+
+.cell {
+  aspect-ratio: 1/1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+  background: rgba(255,255,255,0.08); /* slightly lighter */
+  border: 2px solid rgba(255,255,255,0.15); /* clear border */
+  border-radius: 8px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform .08s ease, box-shadow .12s;
+}
+
+.cell:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 0 12px rgba(255,255,255,0.2); /* subtle highlight */
+}
+
   }
 </style>
 </head>
