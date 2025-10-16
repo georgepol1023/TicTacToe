@@ -3,27 +3,24 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tic Tac Toe Game</title>
+<title>Tic Tac Toe — Portfolio Project</title>
 <style>
   :root{
-    --bg:#0f1724;
-    --card:#0b1220;
     --accent:#7dd3fc;
     --muted:#94a3b8;
     --win: #34d399;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
 
-  html,body{
+  html, body{
     height:100%;
     margin:0;
-    background:var(--bg);
     color:#e6eef6;
     transition: background 0.3s ease;
   }
 
   .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .card{background:var(--card); border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7); transition: background 0.3s ease;}
+  .card{border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7); transition: background 0.3s ease;}
   
   header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px;}
   h1{font-size:18px;margin:0;color:var(--accent);}
@@ -55,24 +52,24 @@
         <h1>🎯 Tic Tac Toe</h1>
         <div class="controls">
           <label class="small" for="mode">Mode</label>
-          <select id="mode" title="Choose game mode">
+          <select id="mode">
             <option value="pvp">2-Player (local)</option>
             <option value="pve">Single Player vs AI</option>
           </select>
           <label class="small" for="ai-level">AI</label>
-          <select id="ai-level" title="Choose AI difficulty">
+          <select id="ai-level">
             <option value="random">Easy (random)</option>
             <option value="minimax">Hard (minimax)</option>
           </select>
           <label class="small" for="theme">Theme</label>
-          <select id="theme" title="Choose background theme">
+          <select id="theme">
             <option value="dark">Dark</option>
             <option value="sunset">Sunset</option>
             <option value="ocean">Ocean</option>
             <option value="forest">Forest</option>
           </select>
-          <button id="undoBtn" title="Undo last move">Undo</button>
-          <button id="resetBtn" title="Restart game">Restart</button>
+          <button id="undoBtn">Undo</button>
+          <button id="resetBtn">Restart</button>
         </div>
       </header>
 
@@ -110,6 +107,7 @@
 <script>
 // --- Theme Logic ---
 const themeEl = document.getElementById('theme');
+const cardEl = document.querySelector('.card');
 
 const themes = {
   dark: {bg:'#0f1724', card:'#0b1220', accent:'#7dd3fc'},
@@ -120,29 +118,24 @@ const themes = {
 
 function applyTheme(themeName){
   const t = themes[themeName];
-  document.documentElement.style.setProperty('--bg', t.bg);
-  document.documentElement.style.setProperty('--card', t.card);
+  document.body.style.background = t.bg;
+  cardEl.style.background = t.card;
   document.documentElement.style.setProperty('--accent', t.accent);
 }
 
 // Apply theme on change
-themeEl.addEventListener('change', (e)=>{
-  applyTheme(e.target.value);
-});
+themeEl.addEventListener('change', e => applyTheme(e.target.value));
 
-// Initialize
+// Initialize default
 applyTheme('dark');
 
-/* --- Tic Tac Toe logic (unchanged) --- */
-
-// State
-let board = Array(9).fill(null); // null | 'X' | 'O'
+// --- Tic Tac Toe logic ---
+let board = Array(9).fill(null);
 let currentPlayer = 'X';
 let isGameOver = false;
-let history = []; // stack of moves {index, player}
+let history = [];
 let scores = {X:0, O:0, D:0};
 
-// DOM
 const cells = [...document.querySelectorAll('.cell')];
 const turnEl = document.getElementById('turn');
 const modeEl = document.getElementById('mode');
@@ -152,7 +145,6 @@ const undoBtn = document.getElementById('undoBtn');
 const scoreX = document.getElementById('scoreX');
 const scoreO = document.getElementById('scoreO');
 const scoreD = document.getElementById('scoreD');
-const boardEl = document.getElementById('board');
 const downloadBtn = document.getElementById('downloadBtn');
 
 const WIN_LINES = [
@@ -161,13 +153,21 @@ const WIN_LINES = [
   [0,4,8],[2,4,6]
 ];
 
-// Helpers
 function render(){
   cells.forEach((c,i)=>{
     c.textContent = board[i] || '';
     c.classList.remove('highlight');
   });
   turnEl.textContent = currentPlayer;
+}
+
+function checkWinner(bd){
+  for(const line of WIN_LINES){
+    const [a,b,c] = line;
+    if(bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) return {winner: bd[a], line};
+  }
+  if(bd.every(x => x)) return {winner: 'draw'};
+  return null;
 }
 
 function setStatusWinner(winner, winningLine){
@@ -185,15 +185,6 @@ function setStatusWinner(winner, winningLine){
   }
 }
 
-function checkWinner(bd){
-  for(const line of WIN_LINES){
-    const [a,b,c] = line;
-    if(bd[a] && bd[a] === bd[b] && bd[a] === bd[c]) return {winner: bd[a], line};
-  }
-  if(bd.every(x => x)) return {winner: 'draw'};
-  return null;
-}
-
 function makeMove(i, player){
   if(isGameOver || board[i]) return false;
   board[i] = player;
@@ -204,7 +195,7 @@ function makeMove(i, player){
   } else {
     currentPlayer = (player === 'X') ? 'O' : 'X';
     if(modeEl.value === 'pve' && currentPlayer === 'O'){
-      window.setTimeout(aiMove, 150);
+      setTimeout(aiMove, 150);
     }
   }
   render();
@@ -227,7 +218,6 @@ function aiMove(){
     const empties = board.map((v,i)=> v ? null : i).filter(v=>v!==null);
     const idx = empties[Math.floor(Math.random()*empties.length)];
     makeMove(idx, 'O');
-    return;
   } else {
     const move = minimaxDecision(board, 'O');
     if(move !== null) makeMove(move, 'O');
@@ -237,8 +227,7 @@ function aiMove(){
 function minimaxDecision(bd, player){
   const avail = bd.map((v,i)=> v ? null : i).filter(v=>v!==null);
   if(avail.length === 9) return 4;
-  let bestVal = -Infinity;
-  let bestMove = null;
+  let bestVal = -Infinity, bestMove = null;
   for(const idx of avail){
     const copy = bd.slice();
     copy[idx] = player;
@@ -254,71 +243,65 @@ function minimaxDecision(bd, player){
 function minimax(bd, depth, isMaximizing){
   const res = checkWinner(bd);
   if(res){
-    if(res.winner === 'X') return -1;
-    if(res.winner === 'O') return 1;
-    if(res.winner === 'draw') return 0;
+    if(res.winner==='X') return -1;
+    if(res.winner==='O') return 1;
+    if(res.winner==='draw') return 0;
   }
   const avail = bd.map((v,i)=> v ? null : i).filter(v=>v!==null);
   if(isMaximizing){
-    let best = -Infinity;
+    let best=-Infinity;
     for(const i of avail){
-      bd[i] = 'O';
-      const val = minimax(bd, depth+1, false);
-      bd[i] = null;
-      if(val > best) best = val;
+      bd[i]='O';
+      best=Math.max(best, minimax(bd,depth+1,false));
+      bd[i]=null;
     }
     return best;
   } else {
-    let best = Infinity;
+    let best=Infinity;
     for(const i of avail){
-      bd[i] = 'X';
-      const val = minimax(bd, depth+1, true);
-      bd[i] = null;
-      if(val < best) best = val;
+      bd[i]='X';
+      best=Math.min(best, minimax(bd,depth+1,true));
+      bd[i]=null;
     }
     return best;
   }
 }
 
-// UI wiring
-cells.forEach(c => c.addEventListener('click', e=>{
-  const i = Number(e.currentTarget.dataset.index);
-  if(modeEl.value === 'pve' && currentPlayer === 'O') return;
-  makeMove(i, currentPlayer);
+cells.forEach(c=>c.addEventListener('click', e=>{
+  const i=Number(e.currentTarget.dataset.index);
+  if(modeEl.value==='pve' && currentPlayer==='O') return;
+  makeMove(i,currentPlayer);
 }));
 
 resetBtn.addEventListener('click', ()=>{
-  board = Array(9).fill(null);
-  history = [];
-  isGameOver = false;
-  currentPlayer = 'X';
+  board=Array(9).fill(null);
+  history=[];
+  isGameOver=false;
+  currentPlayer='X';
   render();
 });
 
-undoBtn.addEventListener('click', ()=>{ undo(); });
+undoBtn.addEventListener('click', undo);
 
 modeEl.addEventListener('change', ()=>{
-  board = Array(9).fill(null);
-  history = [];
-  isGameOver = false;
-  currentPlayer = 'X';
+  board=Array(9).fill(null);
+  history=[];
+  isGameOver=false;
+  currentPlayer='X';
   render();
 });
 
-aiLevelEl.addEventListener('change', ()=>{ /* no-op */ });
-
 downloadBtn.addEventListener('click', ()=>{
-  const payload = {board, currentPlayer, scores, history, mode: modeEl.value, ai: aiLevelEl.value, time: new Date().toISOString()};
-  const blob = new Blob([JSON.stringify(payload, null, 2)], {type:'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = 'tic-tac-toe-board.json';
+  const payload={board,currentPlayer,scores,history,mode:modeEl.value,ai:aiLevelEl.value,time:new Date().toISOString()};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.download='tic-tac-toe-board.json';
   a.click();
   URL.revokeObjectURL(url);
 });
 
-// init
 render();
 </script>
 </body>
