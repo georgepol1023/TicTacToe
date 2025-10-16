@@ -19,7 +19,7 @@
     transition: background 0.3s ease;
   }
 
-  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing: border-box;}
   .card{border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7); transition: background 0.3s ease;}
   
   header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px;}
@@ -129,6 +129,7 @@
       <div class="footer">
         <div class="small">Built for portfolio — includes AI & undo.</div>
         <div><button id="downloadBtn">Export Board</button></div>
+        <div class="footer">
       </div>
     </div>
   </div>
