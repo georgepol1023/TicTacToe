@@ -13,14 +13,22 @@
   }
 
   html, body{
-    height:100%;
-    margin:0;
-    color:#e6eef6;
+    background: linear-gradient(180deg, #071029 0%, #061524 100%);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* keeps gradient smooth on scroll */
+    color: #e6eef6;
     transition: background 0.3s ease;
   }
 
   .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;box-sizing: border-box;}
-  .card{border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7); transition: background 0.3s ease;}
+  .card{ 
+  background: rgba(11, 18, 32, 0.85); /* instead of solid or tiny gradient */
+  border-radius: 12px;
+  padding: 20px;
+  width: min(720px, 96vw);
+  box-shadow: 0 10px 30px rgba(2,6,23,0.7);
+  transition: background 0.3s ease;}
   
   header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px;}
   h1{font-size:18px;margin:0;color:var(--accent);}
