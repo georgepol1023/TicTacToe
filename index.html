@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Tic Tac Toe — Portfolio Project</title>
+<title>Tic Tac Toe Game</title>
 <style>
   :root{
     --bg:#0f1724;
@@ -13,9 +13,18 @@
     --win: #34d399;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
-  html,body{height:100%;margin:0;background:linear-gradient(180deg,#071029 0%, #061524 100%);color:#e6eef6;}
+
+  html,body{
+    height:100%;
+    margin:0;
+    background:var(--bg);
+    color:#e6eef6;
+    transition: background 0.3s ease;
+  }
+
   .wrap{min-height:100%;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7);}
+  .card{background:var(--card); border-radius:12px; padding:20px; width:min(720px,96vw); box-shadow:0 10px 30px rgba(2,6,23,0.7); transition: background 0.3s ease;}
+  
   header{display:flex;gap:16px;align-items:center;justify-content:space-between;margin-bottom:12px;}
   h1{font-size:18px;margin:0;color:var(--accent);}
   .controls{display:flex;gap:8px;align-items:center;}
@@ -32,6 +41,7 @@
   .highlight{box-shadow:0 6px 18px rgba(52,211,153,0.14);background:linear-gradient(180deg, rgba(52,211,153,0.08), rgba(52,211,153,0.02));}
   .footer{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-size:13px;color:var(--muted)}
   .small{font-size:12px;color:var(--muted)}
+  
   @media (max-width:480px){
     .cell{font-size:32px}
     header{flex-direction:column;align-items:flex-start;gap:8px}
@@ -54,6 +64,13 @@
             <option value="random">Easy (random)</option>
             <option value="minimax">Hard (minimax)</option>
           </select>
+          <label class="small" for="theme">Theme</label>
+          <select id="theme" title="Choose background theme">
+            <option value="dark">Dark</option>
+            <option value="sunset">Sunset</option>
+            <option value="ocean">Ocean</option>
+            <option value="forest">Forest</option>
+          </select>
           <button id="undoBtn" title="Undo last move">Undo</button>
           <button id="resetBtn" title="Restart game">Restart</button>
         </div>
@@ -70,7 +87,6 @@
 
       <main>
         <div class="board" id="board" aria-live="polite">
-          <!-- 9 cells -->
           <div class="cell" data-index="0"></div>
           <div class="cell" data-index="1"></div>
           <div class="cell" data-index="2"></div>
@@ -92,7 +108,32 @@
   </div>
 
 <script>
-/* Tic Tac Toe — JS logic */
+// --- Theme Logic ---
+const themeEl = document.getElementById('theme');
+
+const themes = {
+  dark: {bg:'#0f1724', card:'#0b1220', accent:'#7dd3fc'},
+  sunset: {bg:'linear-gradient(180deg, #ff7e5f, #feb47b)', card:'rgba(255,255,255,0.05)', accent:'#ffdd99'},
+  ocean: {bg:'linear-gradient(180deg, #2193b0, #6dd5ed)', card:'rgba(255,255,255,0.05)', accent:'#a0e7e5'},
+  forest: {bg:'linear-gradient(180deg, #134e4a, #16a34a)', card:'rgba(255,255,255,0.05)', accent:'#b7f5d0'}
+};
+
+function applyTheme(themeName){
+  const t = themes[themeName];
+  document.documentElement.style.setProperty('--bg', t.bg);
+  document.documentElement.style.setProperty('--card', t.card);
+  document.documentElement.style.setProperty('--accent', t.accent);
+}
+
+// Apply theme on change
+themeEl.addEventListener('change', (e)=>{
+  applyTheme(e.target.value);
+});
+
+// Initialize
+applyTheme('dark');
+
+/* --- Tic Tac Toe logic (unchanged) --- */
 
 // State
 let board = Array(9).fill(null); // null | 'X' | 'O'
@@ -139,7 +180,6 @@ function setStatusWinner(winner, winningLine){
     scores[winner] += 1;
     if(winner === 'X') scoreX.textContent = scores.X;
     else scoreO.textContent = scores.O;
-    // highlight winning cells
     winningLine.forEach(i => cells[i].classList.add('highlight'));
     alert(`${winner} wins!`);
   }
@@ -163,7 +203,6 @@ function makeMove(i, player){
     setStatusWinner(result.winner, result.line || []);
   } else {
     currentPlayer = (player === 'X') ? 'O' : 'X';
-    // if PvE and it's AI's turn -> respond
     if(modeEl.value === 'pve' && currentPlayer === 'O'){
       window.setTimeout(aiMove, 150);
     }
@@ -177,13 +216,10 @@ function undo(){
   const last = history.pop();
   board[last.i] = null;
   isGameOver = false;
-  // restore scores? No — undo only reverts moves, not scores
   currentPlayer = last.p;
-  // if PvE and we undid AI move, also undo human previous move if desired -> keep simple: just one undo
   render();
 }
 
-// AI: random or minimax
 function aiMove(){
   if(isGameOver) return;
   const level = aiLevelEl.value;
@@ -193,24 +229,20 @@ function aiMove(){
     makeMove(idx, 'O');
     return;
   } else {
-    // Minimax (AI plays 'O' and tries to minimize X score)
     const move = minimaxDecision(board, 'O');
     if(move !== null) makeMove(move, 'O');
   }
 }
 
-// Minimax implementation
 function minimaxDecision(bd, player){
-  // Returns index of best move for player
   const avail = bd.map((v,i)=> v ? null : i).filter(v=>v!==null);
-  if(avail.length === 9) return 4; // center opening optimization
+  if(avail.length === 9) return 4;
   let bestVal = -Infinity;
   let bestMove = null;
   for(const idx of avail){
     const copy = bd.slice();
     copy[idx] = player;
     const val = minimax(copy, 0, false);
-    // For 'O' we want to maximize O's value. But in our eval O=+1, X=-1 so maximizing.
     if(val > bestVal){
       bestVal = val;
       bestMove = idx;
@@ -251,7 +283,7 @@ function minimax(bd, depth, isMaximizing){
 // UI wiring
 cells.forEach(c => c.addEventListener('click', e=>{
   const i = Number(e.currentTarget.dataset.index);
-  if(modeEl.value === 'pve' && currentPlayer === 'O') return; // wait for AI
+  if(modeEl.value === 'pve' && currentPlayer === 'O') return;
   makeMove(i, currentPlayer);
 }));
 
@@ -261,15 +293,11 @@ resetBtn.addEventListener('click', ()=>{
   isGameOver = false;
   currentPlayer = 'X';
   render();
-  // do not reset scores
 });
 
-undoBtn.addEventListener('click', ()=>{
-  undo();
-});
+undoBtn.addEventListener('click', ()=>{ undo(); });
 
 modeEl.addEventListener('change', ()=>{
-  // reset board on mode change
   board = Array(9).fill(null);
   history = [];
   isGameOver = false;
