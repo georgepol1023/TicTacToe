@@ -1,46 +1,46 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Tic Tac Toe — Smooth Gradient</title>
 <style>
   :root {
-    --accent:#7dd3fc;
-    --muted:#94a3b8;
-    --win:#34d399;
+    --accent: #7dd3fc;
+    --muted: #94a3b8;
+    --win: #34d399;
     font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
   }
 
   html, body {
     height: 100%;
     margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
     background: linear-gradient(180deg, #071029 0%, #061524 100%);
     background-size: cover;
     background-attachment: fixed;
     color: #e6eef6;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   .wrap {
-    min-height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
-    padding: 24px;
+    padding: 40px 24px 80px 24px;
     box-sizing: border-box;
     width: 100%;
   }
 
   .card {
     width: min(720px, 96vw);
-    background: rgba(11,18,32,0.85);
+    background: linear-gradient(to bottom, rgba(11,18,32,0.85), rgba(11,18,32,0.75));
     border-radius: 12px;
     padding: 20px;
-    box-shadow: 0 10px 30px rgba(2,6,23,0.7);
+    box-shadow: 0 10px 30px rgba(2,6,23,0.7), 0 20px 50px rgba(2,6,23,0.3);
     transition: background 0.3s ease;
   }
 
@@ -79,7 +79,7 @@
   .score {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
     align-items: center;
     margin-bottom: 12px;
   }
@@ -112,7 +112,13 @@
     box-shadow: 0 0 12px rgba(255,255,255,0.2);
   }
 
+  .highlight {
+    box-shadow: 0 6px 18px rgba(52,211,153,0.14);
+    background: linear-gradient(180deg, rgba(52,211,153,0.08), rgba(52,211,153,0.02));
+  }
+
   .muted { font-size:13px; color:var(--muted); margin-top:10px; }
+
   .footer {
     display: flex;
     flex-wrap: wrap;
@@ -135,69 +141,71 @@
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="card" role="application" aria-label="Tic Tac Toe game">
-      <header>
-        <h1>🎯 Tic Tac Toe</h1>
-        <div class="controls">
-          <label for="mode">Mode</label>
-          <select id="mode">
-            <option value="pvp">2-Player</option>
-            <option value="pve">Single Player</option>
-          </select>
-          <label for="ai-level">AI</label>
-          <select id="ai-level">
-            <option value="random">Easy</option>
-            <option value="minimax">Hard</option>
-          </select>
-          <label for="theme">Theme</label>
-          <select id="theme">
-            <option value="dark">Dark</option>
-            <option value="sunset">Sunset</option>
-            <option value="ocean">Ocean</option>
-            <option value="forest">Forest</option>
-          </select>
-          <button id="undoBtn">Undo</button>
-          <button id="resetBtn">Restart</button>
-        </div>
-      </header>
-
-      <div class="score">
-        <div>X: <span id="scoreX">0</span></div>
-        <div>O: <span id="scoreO">0</span></div>
-        <div>Draws: <span id="scoreD">0</span></div>
-        <div style="margin-left:auto">Turn: <strong id="turn">X</strong></div>
+<div class="wrap">
+  <div class="card" role="application" aria-label="Tic Tac Toe game">
+    <header>
+      <h1>🎯 Tic Tac Toe</h1>
+      <div class="controls">
+        <label for="mode">Mode</label>
+        <select id="mode">
+          <option value="pvp">2-Player</option>
+          <option value="pve">Single Player</option>
+        </select>
+        <label for="ai-level">AI</label>
+        <select id="ai-level">
+          <option value="random">Easy</option>
+          <option value="minimax">Hard</option>
+        </select>
+        <label for="theme">Theme</label>
+        <select id="theme">
+          <option value="dark">Dark</option>
+          <option value="sunset">Sunset</option>
+          <option value="ocean">Ocean</option>
+          <option value="forest">Forest</option>
+        </select>
+        <button id="undoBtn">Undo</button>
+        <button id="resetBtn">Restart</button>
       </div>
+    </header>
 
-      <div class="board" id="board">
-        <div class="cell" data-index="0"></div>
-        <div class="cell" data-index="1"></div>
-        <div class="cell" data-index="2"></div>
-        <div class="cell" data-index="3"></div>
-        <div class="cell" data-index="4"></div>
-        <div class="cell" data-index="5"></div>
-        <div class="cell" data-index="6"></div>
-        <div class="cell" data-index="7"></div>
-        <div class="cell" data-index="8"></div>
-      </div>
-      <div class="muted">Click a cell to play.</div>
+    <div class="score">
+      <div>X: <span id="scoreX">0</span></div>
+      <div>O: <span id="scoreO">0</span></div>
+      <div>Draws: <span id="scoreD">0</span></div>
+      <div style="margin-left:auto">Turn: <strong id="turn">X</strong></div>
+    </div>
 
-      <div class="footer">
-        <div>Portfolio Project — includes AI & undo.</div>
-        <div><button id="downloadBtn">Export Board</button></div>
-      </div>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+
+    <div class="muted">Click a cell to play.</div>
+
+    <div class="footer">
+      <div>Portfolio Project — includes AI & undo.</div>
+      <div><button id="downloadBtn">Export Board</button></div>
     </div>
   </div>
+</div>
 
 <script>
+// Theme switching
 const themeEl = document.getElementById('theme');
 const cardEl = document.querySelector('.card');
 
 const themes = {
-  dark: {bg:'linear-gradient(180deg, #071029 0%, #061524 100%)', card:'rgba(11,18,32,0.85)', accent:'#7dd3fc'},
-  sunset: {bg:'linear-gradient(180deg, #ff7e5f, #feb47b)', card:'rgba(255,255,255,0.05)', accent:'#ffdd99'},
-  ocean: {bg:'linear-gradient(180deg, #2193b0, #6dd5ed)', card:'rgba(255,255,255,0.05)', accent:'#a0e7e5'},
-  forest: {bg:'linear-gradient(180deg, #134e4a, #16a34a)', card:'rgba(255,255,255,0.05)', accent:'#b7f5d0'}
+  dark: {bg:'linear-gradient(180deg, #071029 0%, #061524 100%)', card:'linear-gradient(to bottom, rgba(11,18,32,0.85), rgba(11,18,32,0.75))', accent:'#7dd3fc'},
+  sunset: {bg:'linear-gradient(180deg, #ff7e5f, #feb47b)', card:'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.05))', accent:'#ffdd99'},
+  ocean: {bg:'linear-gradient(180deg, #2193b0, #6dd5ed)', card:'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.05))', accent:'#a0e7e5'},
+  forest: {bg:'linear-gradient(180deg, #134e4a, #16a34a)', card:'linear-gradient(to bottom, rgba(255,255,255,0.15), rgba(255,255,255,0.05))', accent:'#b7f5d0'}
 };
 
 function applyTheme(name){
@@ -206,11 +214,10 @@ function applyTheme(name){
   cardEl.style.background = t.card;
   document.documentElement.style.setProperty('--accent', t.accent);
 }
-
-themeEl.addEventListener('change', e => applyTheme(e.target.value));
+themeEl.addEventListener('change', e=>applyTheme(e.target.value));
 applyTheme('dark');
 
-// Basic Tic Tac Toe logic
+// Tic Tac Toe logic
 let board = Array(9).fill(null), currentPlayer='X', isGameOver=false, history=[], scores={X:0,O:0,D:0};
 const cells=[...document.querySelectorAll('.cell')], turnEl=document.getElementById('turn'),
 modeEl=document.getElementById('mode'), aiLevelEl=document.getElementById('ai-level'),
@@ -225,8 +232,7 @@ function render(){
   turnEl.textContent=currentPlayer;
 }
 
-function checkWinner(bd){ for(const line of WIN_LINES){ const [a,b,c]=line; if(bd[a]&&bd[a]===bd[b]&&bd[a]===bd[c]) return {winner:bd[a], line}; } 
-if(bd.every(x=>x)) return {winner:'draw'}; return null; }
+function checkWinner(bd){ for(const line of WIN_LINES){ const [a,b,c]=line; if(bd[a]&&bd[a]===bd[b]&&bd[a]===bd[c]) return {winner:bd[a], line}; } if(bd.every(x=>x)) return {winner:'draw'}; return null; }
 
 function setStatusWinner(winner,line){
   isGameOver=true;
